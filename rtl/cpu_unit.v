@@ -146,7 +146,7 @@ module cpu_unit (
 	
     wire [31:0] IMM_OUTPUT;
     wire [2:0] IMM_SEL;
-    wire [7:0] IMM_ENC_INP;
+    wire [7:0] IMM_ENC_INP; //using priority encoder to select imm value among many
 
     assign IMM_ENC_INP[0] = 0;
     assign IMM_ENC_INP[1] = I_TYPE;
@@ -158,7 +158,12 @@ module cpu_unit (
     assign IMM_ENC_INP[7] = 0;
     encoder_8 immediateSelectionEncoder(IMM_ENC_INP, IMM_SEL);
     
-    imm_gen immediateExtractor(INSTRUCTION_EXECUTE_3, IMM_SEL, IMM_OUTPUT);
+	imm_gen immediateselector(.i_instruction(INSTRUCTION_EXECUTE_3),
+			.i_sel(IMM_SEL),
+            .o_dataout(IMM_OUTPUT));
+				  
+				  
+   // imm_gen immediateExtractor(INSTRUCTION_EXECUTE_3, IMM_SEL, IMM_OUTPUT);
 	
 	/*---------------ALU block instantiation--------------------------------------------------*/
 	
@@ -205,7 +210,14 @@ module cpu_unit (
     reg [31:0] ALU_A;
     reg [31:0] ALU_B;
     wire [31:0] ALU_OUT;
-    alu_unit alu(ALU_A, ALU_B, ALU_OP, ALU_OUT);
+	
+	alu_unit alu (.i_A(ALU_A),
+				  .i_B(ALU_B),
+				  .i_op(ALU_OP),
+                  .o_Y(ALU_OUT));
+				   
+				   
+    //alu_unit alu(ALU_A, ALU_B, ALU_OP, ALU_OUT);
 
     always @(*) 
 	begin
@@ -259,7 +271,16 @@ module cpu_unit (
 
     wire [31:0] REG_WRITE_DATA = REG_WRITEBACK_SELECTION == 3 ? DataMEM_READ_DATA_WRITEBACK_5 : REG_WRITE_DATA_WRITEBACK_5;
 
-    reg_file regFile(i_clk,Rs1, Rs2, Rd, REG_WRITE_DATA, WERF, Rs1_DATA_EXECUTE_3, Rs2_DATA_EXECUTE_3);
+    reg_file regFile(.i_clk(i_clk),
+					 .i_RA1(Rs1),
+					 .i_RA2(Rs2),
+					 .i_WA(Rd),
+					 .i_WD(REG_WRITE_DATA),
+					 .i_WE(WERF),
+					 .o_RD1(Rs1_DATA_EXECUTE_3),
+					 .o_RD2(Rs2_DATA_EXECUTE_3));
+	
+	//reg_file regFile(i_clk,Rs1, Rs2, Rd, REG_WRITE_DATA, WERF, Rs1_DATA_EXECUTE_3, Rs2_DATA_EXECUTE_3);
 	
 	
 	
