@@ -37,8 +37,8 @@
 		       xREG[0] <= 0;
 			   xREG[1] <= 0;
 			   xREG[2] <= 0;
-			   xREG[3] <= 6;
-		       xREG[4] <= 9;
+			   xREG[3] <= 0;
+		           xREG[4] <= 0;
 			   xREG[5] <= 0;
 			   xREG[6] <= 0;
 			   xREG[7] <= 0;
